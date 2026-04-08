@@ -1,39 +1,8 @@
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: maintenance-page
-  namespace: prod
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: maintenance-page
-rules:
-  - apiGroups: [""]
-    resources: ["services"]
-    verbs: ["get", "create"]
-  - apiGroups: ["gateway.networking.k8s.io"]
-    resources: ["httproutes"]
-    verbs: ["get", "update"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: maintenance-page
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: maintenance-page
-subjects:
-  - kind: ServiceAccount
-    name: maintenance-page
-    namespace: default
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: maintenance-page
-  namespace: prod
 spec:
   replicas: 1
   selector:
@@ -85,13 +54,13 @@ spec:
               containerPort: 8081
           livenessProbe:
             httpGet:
-              path: /
-              port: 8081
+              path: /index.html
+              port: 8080
             initialDelaySeconds: 2
             periodSeconds: 2
           readinessProbe:
             httpGet:
-              path: /
-              port: 8081
+              path: /index.html
+              port: 8080
             initialDelaySeconds: 2
             periodSeconds: 2
